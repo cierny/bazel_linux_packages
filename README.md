@@ -39,7 +39,21 @@ See [e2e/](e2e/README.md) for end to end tests and the extension docs on BCR for
      [`patchelf`](https://github.com/NixOS/patchelf) to modify the executables and
      binaries to add library search directories to `RUNPATH`. See also
      `fix_absolute_interpreter_with_patchelf`,
-     `fix_relative_interpreter_with_patchelf`, and `extra_patchelf_dirs`.
+     `fix_relative_interpreter_with_patchelf`,
+     `fix_shared_interpreter_with_patchelf`, and `extra_patchelf_dirs`.
+
+     With `fix_shared_interpreter_with_patchelf`, the generated repository
+     exposes `INTERPRETER`, so your own binaries can use the same loader:
+
+     ```py
+     load("@my_repository//:defs.bzl", "INTERPRETER")
+
+     cc_binary(
+         [...]
+         linkopts = ["-Wl,--dynamic-linker=" + INTERPRETER],
+     )
+     ```
+
   2. The systems' loader will be used to load required libraries and will search
      system-wide. `LD_LIBRARY_PATH` can be used to set directories to search.
      `LD_DEBUG` can be used to debug missing library issues. The generated
